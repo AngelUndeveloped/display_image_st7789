@@ -1,73 +1,49 @@
-#include <Arduino.h>
-#include <Adafruit_GFX.h>    // Core graphics library
-#include <Adafruit_I2CDevice.h>
-#include <Adafruit_ST7789.h> // Hardware-specific library for ST7789
-#include <SPI.h>             // Arduino SPI library
+// #define TFT_MOSI 23  // SDA Pin on ESP32
+// #define TFT_SCLK 18  // SCL Pin on ESP32
+// #define TFT_CS   -1  // Chip select control pin
+// #define TFT_DC   15  // Data Command control pin
+// #define TFT_RST  17  // Reset pin (could connect to RST pin)
+// #define MAX_IMAGE_WIDTH 240;
 
-#define TFT_MOSI 23  // SDA Pin on ESP32
-#define TFT_SCLK 18  // SCL Pin on ESP32
-#define TFT_CS   -1  // Chip select control pin
-#define TFT_DC   15  // Data Command control pin
-#define TFT_RST  17  // Reset pin (could connect to RST pin)
+// Include the PNG decoder library
+#include <PNGdec.h>
+#include "resources/pikachuBitmap.h"
 
+#define MAX_IMAGE_WIDTH 240 // Adjust for your images
 
-// Initialize Adafruit ST7789 TFT library
-Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_RST);
- 
-float p = 3.1415926;
- 
-void tftPrintTest() {
-  tft.setTextWrap(false);
-  tft.fillScreen(ST77XX_BLACK);
-  tft.setCursor(0, 30);
-  tft.setTextColor(ST77XX_RED);
-  tft.setTextSize(1);
-  tft.println("Hello World!");
-  tft.setTextColor(ST77XX_YELLOW);
-  tft.setTextSize(2);
-  tft.println("Hello World!");
-  tft.setTextColor(ST77XX_GREEN);
-  tft.setTextSize(3);
-  tft.println("Hello World!");
-  tft.setTextColor(ST77XX_BLUE);
-  tft.setTextSize(4);
-  tft.print(1234.567);
-  delay(1500);
-  tft.setCursor(0, 0);
-  tft.fillScreen(ST77XX_BLACK);
-  tft.setTextColor(ST77XX_WHITE);
-  tft.setTextSize(0);
-  tft.println("Hello World!");
-  tft.setTextSize(1);
-  tft.setTextColor(ST77XX_GREEN);
-  tft.print(p, 6);
-  tft.println(" Want pi?");
-  tft.println(" ");
-  tft.print(8675309, HEX); // print 8,675,309 out in HEX!
-  tft.println(" Print HEX!");
-  tft.println(" ");
-  tft.setTextColor(ST77XX_WHITE);
-  tft.println("Sketch has been");
-  tft.println("running for: ");
-  tft.setTextColor(ST77XX_MAGENTA);
-  tft.print(millis() / 1000);
-  tft.setTextColor(ST77XX_WHITE);
-  tft.print(" seconds.");
-}
- 
-void setup(void) {
+int16_t xpos = 0;
+int16_t ypos = 0;
+
+// Include the TFT library https://github.com/Bodmer/TFT_eSPI
+#include "SPI.h"
+#include <TFT_eSPI.h>              // Hardware-specific library
+TFT_eSPI tft = TFT_eSPI();         // Invoke custom library
+
+//====================================================================================
+//                                    Setup
+//====================================================================================
+void setup()
+{
   Serial.begin(115200);
-    
-  tft.init(240, 240, SPI_MODE3);    // Init ST7789 display 135x240 pixel
-  tft.setRotation(3);
-  tft.fillScreen(ST77XX_BLACK);
+  Serial.println("Initializing... Loading Image...");
+  delay(1000);
+
+  // Initialise the TFT
+  tft.begin();
+  tft.fillScreen(TFT_BLACK);
+  delay(1000);
+
+  Serial.println("Initialisation done.");
+  delay(1000);
 }
- 
-void loop() {
-  tft.invertDisplay(true);
-  tftPrintTest();
-  delay(1000);
-  tft.invertDisplay(false);
-  tftPrintTest();
-  delay(1000);
+
+//====================================================================================
+//                                    Loop
+//====================================================================================
+void loop()
+{
+  Serial.println("Displaying Image...");
+  tft.pushImage(0, 0, 240, 240, shocked_pikachu_bitmap);
+  //tft.drawCircle(120,120, 20, TFT_BLUE);
+  // delay(1000);
 }
